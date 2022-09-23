@@ -8,70 +8,7 @@ const Knex = require('knex');
 const dataBase = require('../databases/DbConnection');
 
 //functions 
-function isUndefined(x){
-    if(x != undefined && x != ''){
-        return 200;
-    }else{
-        return 400;
-    }
-}
-
-function isLenghtRight(x){
-    if(x.length > 3 && x.length < 20 ){   
-        return 200;
-    }else{
-        return 411;
-    }
-}
-
-
-function nameValidation(variable){
-
-    firstValidation = isUndefined(variable)
-
-    if(firstValidation == 200){
-
-        secondValidation = isLenghtRight(variable)
-
-        if(secondValidation == 200){
-            return 200;
-
-        }else{
-            return secondValidation;
-        }
-
-    }else{
-        return firstValidation;
-    }
-   
-}
-
-function numberValidation(variable){
-
-   firstValidation = isUndefined(variable)
-
-    if(firstValidation == 200){
-        
-        if(variable != isNaN){
-           
-            if(variable > 0 && variable < 1000){
-                return 200;
-
-            }else{
-                return 400;
-            }
-
-
-        }else{
-            return 400;
-        }
-
-
-
-    }else{
-        return firstValidation;
-    }
-}
+const Functions = require('../functions/functions');
 
 //Books CRUD 
 router.post('/books',(req,res) => {
@@ -84,10 +21,10 @@ router.post('/books',(req,res) => {
         description: description
     }
 
-    let name_statusCode = nameValidation(name);
-    let picture_statusCode = nameValidation(picture);
-    let price_statusCode = numberValidation(price);   
-    let description_statusCode = isUndefined(description);
+    let name_statusCode = Functions.nameValidation(name);
+    let picture_statusCode = Functions.nameValidation(picture);
+    let price_statusCode = Functions.numberValidation(price);
+    let description_statusCode = Functions.isUndefined(description);
 
     if(name_statusCode == 200){
 
@@ -145,9 +82,9 @@ router.put('/books',(req,res) => {
         description: description
     }
 
-    let picture_statusCode = nameValidation(picture);
-    let price_statusCode = numberValidation(price);   
-    let description_statusCode = isUndefined(description);
+    let picture_statusCode = Functions.nameValidation(picture);
+    let price_statusCode = Functions.numberValidation(price);   
+    let description_statusCode = Functions.isUndefined(description);
 
     if(picture_statusCode == 200){
 
@@ -159,7 +96,7 @@ router.put('/books',(req,res) => {
                         
                     if(books.length > 0){
                         
-                        dataBase.update(updateBook).into('book').then(data => {          
+                        dataBase.update(updateBook).into('book').where({name: name}).then(data => {          
                             res.send("you suceffully update: " + name);                   
                         })    
                             

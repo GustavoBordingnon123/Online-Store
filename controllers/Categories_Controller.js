@@ -8,43 +8,7 @@ const Knex = require('knex');
 const dataBase = require('../databases/DbConnection');
 
 //functions 
-function isUndefined(x){
-    if(x != undefined && x != ''){
-        return 200;
-    }else{
-        return 400;
-    }
-}
-
-function isLenghtRight(x){
-    if(x.length > 3 && x.length < 20 ){   
-        return 200;
-    }else{
-        return 411;
-    }
-}
-
-
-function nameValidation(variable){
-
-    firstValidation = isUndefined(variable)
-
-    if(firstValidation == 200){
-
-        secondValidation = isLenghtRight(variable)
-
-        if(secondValidation == 200){
-            return 200;
-
-        }else{
-            return secondValidation;
-        }
-
-    }else{
-        return firstValidation;
-    }
-   
-}
+const Functions = require('../functions/functions');
 
 //Categories CRUD
 router.post('/categories',(req,res) => {
@@ -55,7 +19,7 @@ router.post('/categories',(req,res) => {
         type: category
     }
 
-    let statusCode = nameValidation(category)
+    let statusCode = Functions.nameValidation(category)
 
     dataBase.select().table('category').where({type: category}).then(categories => {
 
@@ -95,7 +59,7 @@ router.put('/categories',(req,res) => {
         type: updateCategory
     }
 
-    let statusCode = nameValidation(category)
+    let statusCode = Functions.nameValidation(category)
 
     
     dataBase.select().table('category').where({type:category}).then(categories => {

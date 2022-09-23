@@ -9,95 +9,10 @@ const bcrypt = require('bcryptjs');
 const dataBase = require('../databases/DbConnection');
 
 //functions 
-function isUndefined(x){
-    if(x != undefined && x != ''){
-        return 200;
-    }else{
-        return 400;
-    }
-}
-
-function isLenghtRight(x){
-    if(x.length > 3 && x.length < 20 ){   
-        return 200;
-    }else{
-        return 411;
-    }
-}
-
-
-function nameValidation(variable){
-
-    firstValidation = isUndefined(variable)
-
-    if(firstValidation == 200){
-
-        secondValidation = isLenghtRight(variable)
-
-        if(secondValidation == 200){
-            return 200;
-
-        }else{
-            return secondValidation;
-        }
-
-    }else{
-        return firstValidation;
-    }
-   
-}
-
-function emailValidation(email) {
-    const re = /\S+@\S+\.\S+/;
-
-    if(re.test(email)){
-        return 200;
-    }else{
-        return 400;
-    }
-}
-
-function passwordValidation(password){
-    
-    const lowerWords = /[a-z]/; 
-    const upperWords = /[A-Z]/;
-    const numbers = /[0-9]/;
-    const especialCaracther = /[!|@|#|$|%|^|&|*|(|)|-|_]/
-
-    if(nameValidation(password) == 200){
-
-        if(lowerWords.test(password)){
-       
-            if(upperWords.test(password)){
-                
-                if(numbers.test(password)){
-    
-                    if(especialCaracther.test(password)){
-                        return 200;
-                    }else{
-                        return 400;
-                    }
-    
-                }else{
-                    return 400
-                }
-    
-            }else{
-                return 400
-            }
-    
-        }else{
-            return 400
-        }
-    
-    }else{
-        return password_statusCode;
-    }
-}
+const Functions = require('../functions/functions');
 
 
 //Users Crud
-
 router.post('/users',(req,res) => {
     let{name,email,password} = req.body;
 
@@ -110,15 +25,15 @@ router.post('/users',(req,res) => {
         password: hash
     }
 
-    //let name_statusCode = nameValidation(name);
-    //let email_statusCode = nameValidation(email);
-    //let password_statusCode = passwordValidation(password);
+    let name_statusCode = Functions.nameValidation(name);
+    let email_statusCode = Functions.nameValidation(email);
+    let password_statusCode = Functions.passwordValidation(password);
 
-    if(nameValidation(name) == 200){
+    if(name_statusCode == 200){
 
-        if(nameValidation(email) == 200 && emailValidation(email) == 200 ){
+        if(email_statusCode == 200 && Functions.emailValidation(email) == 200 ){
 
-            if(passwordValidation(password) == 200){
+            if(password_statusCode == 200){
 
                 dataBase.select().table('user').where({email: email}).then(emails => {
 
@@ -138,7 +53,7 @@ router.post('/users',(req,res) => {
 
             }else{
                 console.log("format password error")
-                res.sendStatus(400);
+                res.sendStatus(password_statusCode);
             }
 
         }else{
@@ -149,7 +64,7 @@ router.post('/users',(req,res) => {
 
     }else{
         console.log("format name error")
-        res.sendStatus(400);
+        res.sendStatus(name_statusCode);
     }
 
 });
@@ -173,21 +88,21 @@ router.put('/users',(req,res) => {
         password: hash
     }
 
-    //let name_statusCode = nameValidation(name);
-    //let email_statusCode = nameValidation(email);
-    //let password_statusCode = passwordValidation(password);
+    let name_statusCode = Functions.nameValidation(name);
+    let email_statusCode = Functions.nameValidation(newEmail);
+    let password_statusCode = Functions.passwordValidation(password);
 
-    if(nameValidation(name) == 200){
+    if(name_statusCode == 200){
 
-        if(nameValidation(email) == 200 && emailValidation(email) == 200 ){
+        if(email_statusCode == 200 && Functions.emailValidation(newEmail) == 200 ){
 
-            if(passwordValidation(password) == 200){
+            if(password_statusCode == 200){
 
                 dataBase.select().table('user').where({email: email}).then(emails => {
 
                     if(emails.length > 0){
         
-                        dataBase.update(updateUser).into('user').then(data => {          
+                        dataBase.update(updateUser).into('user').where({email: email}).then(data => {          
                             res.send("you suceffully update: " + email);                   
                         })    
                             
@@ -200,7 +115,7 @@ router.put('/users',(req,res) => {
 
             }else{
                 console.log("format password error")
-                res.sendStatus(400);
+                res.sendStatus(password_statusCode);
             }
 
         }else{
@@ -211,7 +126,7 @@ router.put('/users',(req,res) => {
 
     }else{
         console.log("format name error")
-        res.sendStatus(400);
+        res.sendStatus(name_statusCode);
     }
 });
 
